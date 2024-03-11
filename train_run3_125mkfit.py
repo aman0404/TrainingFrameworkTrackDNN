@@ -54,19 +54,22 @@ def mixing(*args):
     x=tf.random.shuffle(x) 
     return x
 
+path = '/depot/cms/users/kaur214/tfRecords/' 
+#path='/ceph/cms/store/user/legianni/tfrecordOLD-ckf3/'
+#processes=['DisSUSY1', 'DisSUSY2', 'DisSUSY3', 'DisSUSY4', 'QCD1', 'QCD2', 'TT', 'ZToEE1']
 
-path='/ceph/cms/store/user/legianni/tfrecordOLD-ckf3/'
-processes=['DisSUSY1', 'DisSUSY2', 'DisSUSY3', 'DisSUSY4', 'QCD1', 'QCD2', 'TT', 'ZToEE1']
+processes=["TT", "QCD"]
+#processes=["TT", "QCD", "DisSUSY", "ZpEE"]
 
-path="/ceph/cms/store/user/legianni/tfrecordNEW-mkfit-125/"
-processes=[
-"DisSUSY-newMK",
-"QCD-newMK",
-"SMS-newMK",
-"SoftQCD-newMK",
-"TT-newMK",
-"ZToEE-newMK",
-]
+#path="/ceph/cms/store/user/legianni/tfrecordNEW-mkfit-125/"
+#processes=[
+#"DisSUSY-newMK",
+#"QCD-newMK",
+#"SMS-newMK",
+#"SoftQCD-newMK",
+#"TT-newMK",
+#"ZToEE-newMK",
+#]
 
 #path="/ceph/cms/store/user/legianni/tfrecordOLD-mkfit-125/"
 #processes=[
@@ -80,17 +83,17 @@ processes=[
 #"ZToEE1-MK",
 #]
 
-path='/ceph/cms/store/user/legianni/tfrecordOLD-mkfit-125_v2/'
-processes=[
-'DisSUSY1-MK_v2', 
-'DisSUSY2-MK_v2', 
-'DisSUSY3-MK_v2', 
-'DisSUSY4-MK_v2',
-'QCD1-MK_v2',
-'QCD2-MK_v2',
-'TT-MK_v2',
-'ZToEE1-MK_v2',
-'SoftQCD-newMK_v2',]
+#path='/ceph/cms/store/user/legianni/tfrecordOLD-mkfit-125_v2/'
+#processes=[
+#'DisSUSY1-MK_v2', 
+#'DisSUSY2-MK_v2', 
+#'DisSUSY3-MK_v2', 
+#'DisSUSY4-MK_v2',
+#'QCD1-MK_v2',
+#'QCD2-MK_v2',
+#'TT-MK_v2',
+#'ZToEE1-MK_v2',
+#'SoftQCD-newMK_v2',]
 
 #path="/ceph/cms/store/user/legianni/tfrecordNEW-ckf-125_v2/"
 #processes=[
@@ -101,23 +104,23 @@ processes=[
 #'TT-newCKF_v2',
 #'ZToEE-newCKF_v2']
 
-path="/ceph/cms/store/user/legianni/tfrecordNEW-mkfit-125_PIXELLESSonly/"
-processes=[
-"DisSUSY1-pLess",
-"DisSUSY2-pLess",
-"DisSUSY3-pLess",
-"DisSUSY4-pLess",
-"QCD1-pLess",
-"QCD2-pLess",
-"TT",
+#path="/ceph/cms/store/user/legianni/tfrecordNEW-mkfit-125_PIXELLESSonly/"
+#processes=[
+#"DisSUSY1-pLess",
+#"DisSUSY2-pLess",
+#"DisSUSY3-pLess",
+#"DisSUSY4-pLess",
+#"QCD1-pLess",
+#"QCD2-pLess",
+#"TT",
 #"XiMinus1-pLess",
 #"XiMinus2-pLess",
 #"XiMinus3-pLess",
 #"XiMinus4-pLess",
 #"XiMinus5-pLess",
 #"ZEE-pLess",
-"XiMinusNOPU-pLess",
-]
+#"XiMinusNOPU-pLess",
+#]
 
 def main():
     
@@ -171,6 +174,7 @@ def main():
             wgts['F'][i]=0
 
     print('split dataset into train and val')
+    val_datasets1=[]
     val_datasets=[]
     train_datasets=[]
     sample_ratio=[]
@@ -180,11 +184,16 @@ def main():
         sample_ratio.append(round(batch_size*float(sample_size)/float(tot_sample_size)))
         # use a subset to test
         # datasets[process]=datasets[process].take(round(0.0001*sample_size))
-        train_size = round(0.95*sample_size)
+        train_size = round(0.05*sample_size)
+        val_size = round(0.01*sample_size)
+        #train_size = round(0.95*sample_size)
         print ('full size is %i'%sample_size)
         print ('train size is %i'%train_size)
         train_datasets.append(datasets[process].take(train_size))
-        val_datasets.append(datasets[process].skip(train_size))
+        val_datasets.append(datasets[process].skip(train_size).take(val_size))
+
+
+        #val_datasets.append(datasets[process].skip(train_size))
 
     #sample_ratio[0]=sample_ratio[0]-1
     print ('concat and mixing dataset')
@@ -247,7 +256,7 @@ def main():
             #print ("and end batch", len(self.losses))
             if len(self.losses)%10000 ==0: print("loss %f, auc %f" %(logs.get('loss'), logs.get('auc')))
         def on_epoch_end(self, epoch, logs=None):
-            model.save(f'./retrain-ALL-MKFIT125-pixelLessOnlyAndSoftQCD_wNOPU/modelTEST-{epoch:02d}')
+            model.save(f'./retrain-ALL-hammer_spring23_allEvents/modelTEST-{epoch:02d}')
 
     loss_history = LossHistory()
     with Timer("Training"):
@@ -264,12 +273,12 @@ def main():
     plt.xlabel('epoch')
     plt.ylabel('auc')
     plt.legend(['train','validation'],loc='upper right')
-    plt.savefig('plots/auc.pdf')
+    plt.savefig('plots/hammer_auc.pdf')
     plt.clf()
     plt.plot(range(1,len(loss_history.losses)+1),loss_history.losses) 
     plt.xlabel('iteration')
     plt.ylabel('loss')
-    plt.savefig('plots/loss_iteration.pdf')
+    plt.savefig('plots/hammer_loss_iteration.pdf')
     plt.clf()
     with Timer("Save"):
         model_manager.save_model(model)

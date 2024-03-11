@@ -156,6 +156,8 @@ def make_plots(column, df_tot, process, iteration=None, suffix=""):
         plt.hist(np.clip(data_col[df_tot["trk_isTrue"]==1], binning[1], binning[-2]), bins=binning, log=False, histtype='step', color="green", label="true")
         plt.legend(loc='upper right')          
 
+
+        #true_labels = df_tot["trk_isTrue"].astype(int)
         fpr, tpr, thresholds = roc_curve(df_tot["trk_isTrue"], data_col)
         auc_score = auc(fpr, tpr)
         auc_score = max(auc_score, 1-auc_score)
@@ -231,30 +233,42 @@ def make_plots(column, df_tot, process, iteration=None, suffix=""):
             plt.savefig(path_to_save+process+"/fig/"+column+"/"+column+"__plotLOG-ZOOM"+suffix+".png")
             plt.clf()
 
-path_to_save='/data2/legianni/TrainingFrameworkTrackDNN/baseline-plots-125x-old/'
+path_to_save= '/home/kaur214/service_task/tracking_POG/training/TrainingFrameworkTrackDNN/data3/'
+#path_to_save='/data2/legianni/TrainingFrameworkTrackDNN/baseline-plots-125x-old/'
 
 paths={
-"DisSUSY1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1000_1000mm_TuneCP5_14TeV_pythia8/crab_DisSUSY11--fullCKF3-113/220824_210143/0000",
-"DisSUSY2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1000_100mm_TuneCP5_14TeV_pythia8/crab_DisSUSY10--fullCKF3-113/220824_195412/0000",
-"DisSUSY3":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1800_1000mm_TuneCP5_14TeV_pythia8/crab_DisSUSY181--fullCKF3-113/220824_210000/0000",
-"DisSUSY4":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1800_100mm_TuneCP5_14TeV_pythia8/crab_DisSUSY180--fullCKF3-113/220824_210326/0000",
-"QCD1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/QCD_Pt-15to7000_TuneCUETP8M1_Flat_14TeV-pythia8/crab_QCD--fullCKF3-113/220824_210727/0000",
-"QCD2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/QCD_Pt-15to7000_TuneCUETP8M1_Flat_14TeV-pythia8/crab_QCD--fullCKF3-113/220824_210727/0001",
-"TT":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullCKF3-113/220824_210945/0000",
-"ZToEE1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/ZToEE_TuneCUETP8M1_14TeV-pythia8/crab_ZEE--fullCKF3-113/220824_210544/0000",
-"ZToEE2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/ZToEE_TuneCUETP8M1_14TeV-pythia8/crab_ZEE--fullCKF3-113/220824_210544/0001",
-"TrainTTbar":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-CMSSW125X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullCKFo/220905_224944/0000",
-"TrainTTBS":"/data2/legianni/DNN-ntuples/CMSSW_12_5_0_pre5/src/validate2",
-"TrainTTBS_v2ntuples":"/ceph/cms/store/user/legianni/tkNtuple-GeneralCKF-OldSamples-CMSSW125X-GTv2/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullCKFnn/220917_050726/0000",
-"TrainTTBSmkFit_v2":"/ceph/cms/store/user/legianni/tkNtuple-General-MKFIT-newsamples-CMSSW125X-GTv2/TT_TuneCP5_13p6TeV-powheg-pythia8/crab_TT--fullMKFITnnn/220921_213630/0000",
-"RelValTTbarC":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-newsamples-CMSSW125X/RelValTTbar_14TeV/crab_RelValTT--fullCKFn/220914_200030/0000",
-"TrainTTbar":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-newsamples-CMSSW125X/TT_TuneCP5_13p6TeV-powheg-pythia8/crab_TT--fullCKFn/220905_235423/0000",
-"RelValTTbarM":"/ceph/cms/store/user/legianni/tkNtuple-General-MKFIT-newsamples-CMSSW125X/RelValTTbar_14TeV/crab_RelValTT--fullMKFITn/220914_200339/0000"
+#"TT": "/eos/purdue/store/user/amkaur/tkNtuple-General-MKFIT-phase2-CMSSW131X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullMKFITni/240118_165359/0000",  ##spring23
+"TT" : "/eos/purdue/store/user/amkaur/tkNtuple-General-MKFIT-phase2-CMSSW131X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT_new--fullMKFITni/240304_204216/0000/",
+#"TT" : "/eos/purdue/store/user/amkaur/Fall22_tkNtuple-General-MKFIT-phase2-CMSSW131X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullMKFITni/240124_210730/0000/",
+"QCD":"/eos/purdue/store/user/amkaur/Fall22_tkNtuple-General-MKFIT-phase2-CMSSW131X/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/crab_QCD--fullMKFITni/240124_211135/0000/", ##Fall22
+"DisSUSY" : "/eos/purdue/store/user/amkaur/Fall22_tkNtuple-General-MKFIT-phase2-CMSSW131X/DisplacedSUSY_stopToBottom_M-800_1000mm_TuneCP5_14TeV-pythia8/crab_DisSUSY80--fullMKFITni/240124_211322/0000/",
+"ZpEE" : "/eos/purdue/store/user/amkaur/Fall22_tkNtuple-General-MKFIT-phase2-CMSSW131X/ZprimeToEE_M-6000_TuneCP5_14TeV-pythia8/crab_ZpEE--fullMKFITni/240124_211458/0000/",
 }
 
-for process in ["RelValTTbarM", "RelValTTbarC"]:#for process in ['DisSUSY1', 'DisSUSY2', 'DisSUSY3', 'DisSUSY4', 'QCD1', 'TT', 'ZToEE1',]:
-        files = glob(''+paths[process]+'/tr*root')[0:10]
-        n = 4 
+#paths={
+#"DisSUSY1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1000_1000mm_TuneCP5_14TeV_pythia8/crab_DisSUSY11--fullCKF3-113/220824_210143/0000",
+#"DisSUSY2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1000_100mm_TuneCP5_14TeV_pythia8/crab_DisSUSY10--fullCKF3-113/220824_195412/0000",
+#"DisSUSY3":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1800_1000mm_TuneCP5_14TeV_pythia8/crab_DisSUSY181--fullCKF3-113/220824_210000/0000",
+#"DisSUSY4":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1800_100mm_TuneCP5_14TeV_pythia8/crab_DisSUSY180--fullCKF3-113/220824_210326/0000",
+#"QCD1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/QCD_Pt-15to7000_TuneCUETP8M1_Flat_14TeV-pythia8/crab_QCD--fullCKF3-113/220824_210727/0000",
+#"QCD2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/QCD_Pt-15to7000_TuneCUETP8M1_Flat_14TeV-pythia8/crab_QCD--fullCKF3-113/220824_210727/0001",
+#"TT":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullCKF3-113/220824_210945/0000",
+#"ZToEE1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/ZToEE_TuneCUETP8M1_14TeV-pythia8/crab_ZEE--fullCKF3-113/220824_210544/0000",
+#"ZToEE2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/ZToEE_TuneCUETP8M1_14TeV-pythia8/crab_ZEE--fullCKF3-113/220824_210544/0001",
+#"TrainTTbar":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-CMSSW125X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullCKFo/220905_224944/0000",
+#"TrainTTBS":"/data2/legianni/DNN-ntuples/CMSSW_12_5_0_pre5/src/validate2",
+#"TrainTTBS_v2ntuples":"/ceph/cms/store/user/legianni/tkNtuple-GeneralCKF-OldSamples-CMSSW125X-GTv2/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullCKFnn/220917_050726/0000",
+#"TrainTTBSmkFit_v2":"/ceph/cms/store/user/legianni/tkNtuple-General-MKFIT-newsamples-CMSSW125X-GTv2/TT_TuneCP5_13p6TeV-powheg-pythia8/crab_TT--fullMKFITnnn/220921_213630/0000",
+#"RelValTTbarC":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-newsamples-CMSSW125X/RelValTTbar_14TeV/crab_RelValTT--fullCKFn/220914_200030/0000",
+#"TrainTTbar":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-newsamples-CMSSW125X/TT_TuneCP5_13p6TeV-powheg-pythia8/crab_TT--fullCKFn/220905_235423/0000",
+#"RelValTTbarM":"/ceph/cms/store/user/legianni/tkNtuple-General-MKFIT-newsamples-CMSSW125X/RelValTTbar_14TeV/crab_RelValTT--fullMKFITn/220914_200339/0000"
+#}
+
+for process in ["TT"]:#for process in ['DisSUSY1', 'DisSUSY2', 'DisSUSY3', 'DisSUSY4', 'QCD1', 'TT', 'ZToEE1',]:
+        #files = glob(''+paths[process]+'/tr*root')
+        files = glob(''+paths[process]+'/trackingNtuple_1[0-9].*')
+        #files = glob(''+paths[process]+'/tr*root')[0:10]
+        n = 2 
         n_bag = len(files)/n+1
         file_bags = np.array_split(files, n_bag)
         i=1
@@ -306,7 +320,7 @@ for process in ["RelValTTbarM", "RelValTTbarC"]:#for process in ['DisSUSY1', 'Di
           make_plots(column, df_tot, process, iteration=22, suffix="HighPtTripletStep")
           make_plots(column, df_tot, process, iteration=5, suffix="LowPtTripletStep")
           make_plots(column, df_tot, process, iteration=24, suffix="DetachedQuadStep")
-          make_plots(column, df_tot, process, iteration=7, suffix="DetachedTripletStep")
+          #make_plots(column, df_tot, process, iteration=7, suffix="DetachedTripletStep")
           make_plots(column, df_tot, process, iteration=6, suffix="PixelPairStep")
           make_plots(column, df_tot, process, iteration=8, suffix="MixedTripletStep")
           make_plots(column, df_tot, process, iteration=9, suffix="PixelLessStep")

@@ -2,8 +2,7 @@ import os
 import shutil
 import sys
 import tensorflow as tf
-
-from config import network_param_dict, make_model
+from config import network_param_dict, lr_schedule,  make_model
 from helper_functions import get_timestamp
 
 class ModelManager():
@@ -51,12 +50,14 @@ class ModelManager():
             #Check if a tuned model exists and use that
             if os.path.exists("hypertuned_model") and not reinitialize_model:
                 print("Found it")
+                #stored_model = keras.models.load_model("hypertuned_model")
                 stored_model = tf.keras.models.load_model("hypertuned_model")
             else:
                 current_model = make_model(self.n_regular_inputs, self._min_values, self._max_values)
                 if not reinitialize_model:
                     #Check if initialized weights already exist or should new ones be created
                     if os.path.exists(f"{self._initialized_network_storage_path}"):
+                        #stored_model = keras.models.load_model(f"{self._initialized_network_storage_path}")
                         stored_model = tf.keras.models.load_model(f"{self._initialized_network_storage_path}")
 
                     #Checks if the currently desired model differs from the stored model initialization from number of parameters
@@ -71,12 +72,14 @@ class ModelManager():
                 else:
                     print("Creating new model")
                     stored_model = current_model
-                    stored_model.save(f"{self._initialized_network_storage_path}")
+                    tf.saved_model.save(stored_model, f"{self._initialized_network_storage_path}")
+                    #stored_model.save(f"{self._initialized_network_storage_path}")
                 #==========================================================================
 
             #Compile model.
             metrics = [tf.metrics.AUC()]
-            stored_model.compile(optimizer=tf.keras.optimizers.Adam(lr=network_param_dict["lr"], decay=network_param_dict["decay"]),
+            #stored_model.compile(optimizer=keras.optimizers.Adam(learning_rate=lr_schedule),
+            stored_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
                                #optimizer=tf.keras.optimizers.SGD(lr=network_param_dict["lr"], decay=network_param_dict["decay"]),
                                loss=network_param_dict["loss"],
                                #loss="binary_crossentropy",
@@ -93,7 +96,8 @@ class ModelManager():
     def save_model(self, model):
         #Create directory to store results
         time = get_timestamp()
-        self._result_dir = f"results/training_run_{time}"
+        self._result_dir = f"results/training_run"
+        #self._result_dir = f"results/training_run_{time}"
         [os.mkdir(x) for x in [f"{self._result_dir}/{subdir}" for subdir in ["", "model", "plots"]]]
 
         #Save in TF savedModel format

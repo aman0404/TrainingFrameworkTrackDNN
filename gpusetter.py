@@ -57,31 +57,31 @@ def set_gpus(n_gpus=gpu_settings["n_gpus"], min_vram=gpu_settings["min_vram"], s
     print(n_gpus)
     gpu_ids = map(lambda gpu: int(gpu.entry['index']), gpu_stats)
     print(gpu_ids)
-    gpu_freemem = map(lambda gpu: float(gpu.entry['memory.total']-gpu.entry['memory.used']), gpu_stats)
-    pairs = list(zip(gpu_ids, gpu_freemem))
-    valid_pairs = [pair for pair in pairs if pair[1] >= min_vram * split_gpu_into]
-    print (valid_pairs)
-    if len(valid_pairs) < n_gpus:
-        raise ValueError("Not enough valid GPUs detected. Check if the machine has at least {n_gpus} GPUs with at least {min_vram * split_gpu_into}MB free VRAM or set a lower --n_gpus value")
-    sorted_indices = list(argsort([mem[1] for mem in valid_pairs]))[::-1]
-    sorted_pairs = [valid_pairs[i] for i in sorted_indices]
+    #gpu_freemem = map(lambda gpu: float(gpu.entry['memory.total']-gpu.entry['memory.used']), gpu_stats)
+    #pairs = list(zip(gpu_ids, gpu_freemem))
+    #valid_pairs = [pair for pair in pairs if pair[1] >= min_vram * split_gpu_into]
+    #print (valid_pairs)
+    #if len(valid_pairs) < n_gpus:
+    #    raise ValueError("Not enough valid GPUs detected. Check if the machine has at least {n_gpus} GPUs with at least {min_vram * split_gpu_into}MB free VRAM or set a lower --n_gpus value")
+    #sorted_indices = list(argsort([mem[1] for mem in valid_pairs]))[::-1]
+    #sorted_pairs = [valid_pairs[i] for i in sorted_indices]
     if n_gpus != 0:
         print("Setting {n_gpus} physical GPUs split into {n_gpus * split_gpu_into} logical GPUs with {min_vram}MB VRAM each for this training")
     else:
         print("Training on CPU")
     environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-    devices = ",".join([str(pair[0]) for pair in sorted_pairs[:n_gpus]])
-    environ['CUDA_VISIBLE_DEVICES'] = devices
+    #devices = ",".join([str(pair[0]) for pair in sorted_pairs[:n_gpus]])
+    #environ['CUDA_VISIBLE_DEVICES'] = devices
     if split_gpu_into > 1:
         physical_devices = tf_config.list_physical_devices('GPU')
-        for device in physical_devices:
-            tf_config.set_logical_device_configuration(
-                device,
-                [tf_config.LogicalDeviceConfiguration(memory_limit=min_vram) for _ in range(split_gpu_into)]
-            )
+    #    for device in physical_devices:
+    #        tf_config.set_logical_device_configuration(
+    #            device,
+    #            [tf_config.LogicalDeviceConfiguration(memory_limit=min_vram) for _ in range(split_gpu_into)]
+    #        )
     else:
       physical_devices = tf_config.list_physical_devices('GPU')
       #line added not to fill the entire gpu for no reason...
-      tf_config.experimental.set_memory_growth(physical_devices[0], True)
+      #tf_config.experimental.set_memory_growth(physical_devices[0], True)
 
 set_gpus()

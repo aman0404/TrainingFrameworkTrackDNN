@@ -1,4 +1,7 @@
 import tensorflow as tf
+#from tf_keras.layers import Input, Dense, BatchNormalization, Add, Concatenate, Dropout
+
+#import tf_keras as keras
 from tensorflow.keras.layers import Input, Dense, BatchNormalization, Add, Concatenate, Dropout
 from network.custom import InputSanitizerLayer, OneHotLayer
 
@@ -15,7 +18,9 @@ minibatch_multiplier = n_gpus if n_gpus > 0 else 1
 
 network_callbacks =[]
 network_fit_param = {
-    "batch_size":       512*minibatch_multiplier,
+    "batch_size":        512*minibatch_multiplier,
+    #"batch_size":       512*minibatch_multiplier,
+    #"epochs":           1,
     "epochs":           5,
     #"callbacks":        network_callbacks,
     #"callbacks":        [TestCallback()],
@@ -24,13 +29,23 @@ network_fit_param = {
 '''
 Commonly tuned parameters when training network
 '''
+lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+#lr_schedule = keras.optimizers.schedules.ExponentialDecay(
+    initial_learning_rate=1e-3,
+    #initial_learning_rate=1e-3,
+    decay_steps=1000000,
+    decay_rate=3e-3,
+    staircase=True)
+
 network_param_dict = {
-    "lr":                       1e-4,
-    "decay":                    3e-6,                   
+    "lr":                       1e-3,
+    #"decay":                    3e-6,                   
     #"loss":                     tf.keras.losses.MSE,
     "loss":                     tf.keras.losses.binary_crossentropy,
     #"loss":                     tf.keras.losses.BinaryCrossentropy(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE),
+    #"kernel_regularization":     keras.regularizers.l2(0.0),
     "kernel_regularization":    tf.keras.regularizers.l2(0.0),
+    #"kernel_initializer":        keras.initializers.lecun_normal()
     "kernel_initializer":       tf.keras.initializers.lecun_normal()
     
 }
@@ -42,8 +57,10 @@ def make_model(n_regular_inputs, min_values, max_values):
     _kernel_regularization = network_param_dict["kernel_regularization"]
     _kernel_initializer = network_param_dict["kernel_initializer"]
 
-    reg_inp = Input(n_regular_inputs, name="regular_input_layer")
-    cat_inp = Input(1, name="categorical_input_layer")
+    reg_inp = Input((n_regular_inputs,), name="regular_input_layer")
+    #reg_inp = Input(n_regular_inputs, name="regular_input_layer")
+    cat_inp = Input((1,), name="categorical_input_layer")
+    #cat_inp = Input(1, name="categorical_input_layer")
     
     active='elu'
     hidden_wid=32
@@ -51,7 +68,7 @@ def make_model(n_regular_inputs, min_values, max_values):
     sanitized_inp = InputSanitizerLayer(min_values, max_values)(reg_inp)
     one_hot_inp = OneHotLayer()(cat_inp)
 
-    x = Concatenate()([sanitized_inp, one_hot_inp])
+    x = Concatenate(axis=1)([sanitized_inp, one_hot_inp])
 
     x = Dense(units=256,
               activation=active,
@@ -97,8 +114,10 @@ def make_model(n_regular_inputs, min_values, max_values):
                 activation='sigmoid',
                 kernel_initializer=_kernel_initializer,
                 kernel_regularizer=_kernel_regularization,
+                #bias_initializer=keras.initializers.Constant(0.5))(x_in)
                 bias_initializer=tf.keras.initializers.Constant(0.5))(x_in)
 
+    #model = keras.Model([reg_inp, cat_inp], out)
     model = tf.keras.Model([reg_inp, cat_inp], out)
     return model
 

@@ -81,7 +81,8 @@ def load_to_pandas(file_, columns, columns_of_regular_inputs):
             dataframe["trk_inner_eta"] = np.arcsinh(dataframe["trk_inner_pz"]/dataframe["trk_inner_pt"])
             dataframe["trk_outer_eta"] = np.arcsinh(dataframe["trk_outer_pz"]/dataframe["trk_outer_pt"])
             print (dataframe.shape, "ddddd")
-            dataframe = dataframe.loc[:, columns_of_regular_inputs2+["trk_originalAlgo"]+["trk_isTrue"]].astype('float32')
+            dataframe = dataframe.loc[:, columns_of_regular_inputs+["trk_originalAlgo"]+["trk_isTrue"]].astype('float32')
+            #dataframe = dataframe.loc[:, columns_of_regular_inputs2+["trk_originalAlgo"]+["trk_isTrue"]].astype('float32')
 
             return dataframe
         except:
@@ -154,22 +155,31 @@ def mva_plots(column, df_tot, process, iteration=None, suffix=""):
         plt.savefig(path_to_save+process+"/fig/"+column+"/"+"ROC_baseline_logy"+suffix+".png")
         plt.clf()
 
-path_to_save='/data2/legianni/TrainingFrameworkTrackDNN/MVA-test1epoch-innerPtEtaPhi/'
+#path_to_save='/data2/legianni/TrainingFrameworkTrackDNN/MVA-test1epoch-innerPtEtaPhi/'
+path_to_save= '/home/kaur214/service_task/tracking_POG/training/TrainingFrameworkTrackDNN/plots/model_plots/'
 
 paths={
-"DisSUSY1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1000_1000mm_TuneCP5_14TeV_pythia8/crab_DisSUSY11--fullCKF3-113/220824_210143/0000",
-"DisSUSY2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1000_100mm_TuneCP5_14TeV_pythia8/crab_DisSUSY10--fullCKF3-113/220824_195412/0000",
-"DisSUSY3":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1800_1000mm_TuneCP5_14TeV_pythia8/crab_DisSUSY181--fullCKF3-113/220824_210000/0000",
-"DisSUSY4":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1800_100mm_TuneCP5_14TeV_pythia8/crab_DisSUSY180--fullCKF3-113/220824_210326/0000",
-"QCD1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/QCD_Pt-15to7000_TuneCUETP8M1_Flat_14TeV-pythia8/crab_QCD--fullCKF3-113/220824_210727/0000",
-"QCD2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/QCD_Pt-15to7000_TuneCUETP8M1_Flat_14TeV-pythia8/crab_QCD--fullCKF3-113/220824_210727/0001",
-"TT":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullCKF3-113/220824_210945/0000",
-"ZToEE1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/ZToEE_TuneCUETP8M1_14TeV-pythia8/crab_ZEE--fullCKF3-113/220824_210544/0000",
-"ZToEE2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/ZToEE_TuneCUETP8M1_14TeV-pythia8/crab_ZEE--fullCKF3-113/220824_210544/0001"
+#"TT": "/eos/purdue/store/user/amkaur/tkNtuple-General-MKFIT-phase2-CMSSW131X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullMKFITni/240118_165359/0000",  ##spring23
+"TT" : "/eos/purdue/store/user/amkaur/Fall22_tkNtuple-General-MKFIT-phase2-CMSSW131X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullMKFITni/240124_210730/0000/",
+"QCD":"/eos/purdue/store/user/amkaur/Fall22_tkNtuple-General-MKFIT-phase2-CMSSW131X/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/crab_QCD--fullMKFITni/240124_211135/0000/", ##Fall22
+"DisSUSY" : "/eos/purdue/store/user/amkaur/Fall22_tkNtuple-General-MKFIT-phase2-CMSSW131X/DisplacedSUSY_stopToBottom_M-800_1000mm_TuneCP5_14TeV-pythia8/crab_DisSUSY80--fullMKFITni/240124_211322/0000/",
+"ZpEE" : "/eos/purdue/store/user/amkaur/Fall22_tkNtuple-General-MKFIT-phase2-CMSSW131X/ZprimeToEE_M-6000_TuneCP5_14TeV-pythia8/crab_ZpEE--fullMKFITni/240124_211458/0000/",
 }
 
+#paths={
+#"DisSUSY1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1000_1000mm_TuneCP5_14TeV_pythia8/crab_DisSUSY11--fullCKF3-113/220824_210143/0000",
+#"DisSUSY2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1000_100mm_TuneCP5_14TeV_pythia8/crab_DisSUSY10--fullCKF3-113/220824_195412/0000",
+#"DisSUSY3":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1800_1000mm_TuneCP5_14TeV_pythia8/crab_DisSUSY181--fullCKF3-113/220824_210000/0000",
+#"DisSUSY4":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/DisplacedSUSY_stopToBottom_M_1800_100mm_TuneCP5_14TeV_pythia8/crab_DisSUSY180--fullCKF3-113/220824_210326/0000",
+#"QCD1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/QCD_Pt-15to7000_TuneCUETP8M1_Flat_14TeV-pythia8/crab_QCD--fullCKF3-113/220824_210727/0000",
+#"QCD2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/QCD_Pt-15to7000_TuneCUETP8M1_Flat_14TeV-pythia8/crab_QCD--fullCKF3-113/220824_210727/0001",
+#"TT":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/TT_TuneCP5_14TeV-powheg-pythia8/crab_TT--fullCKF3-113/220824_210945/0000",
+#"ZToEE1":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/ZToEE_TuneCUETP8M1_14TeV-pythia8/crab_ZEE--fullCKF3-113/220824_210544/0000",
+#"ZToEE2":"/ceph/cms/store/user/legianni/tkNtuple-General-CKF-oldsamples-113X/ZToEE_TuneCUETP8M1_14TeV-pythia8/crab_ZEE--fullCKF3-113/220824_210544/0001"
+#}
+
 for process in ['TT']:#['DisSUSY1', 'DisSUSY2', 'DisSUSY3', 'DisSUSY4', 'QCD1', 'TT', 'ZToEE1',]:
-        files = glob(''+paths[process]+'/tr*root')[0:20]
+        files = glob(''+paths[process]+'/tr*root')[0:9]
         n = 4 
         n_bag = len(files)/n+1
         file_bags = np.array_split(files, n_bag)
@@ -208,10 +218,11 @@ for process in ['TT']:#['DisSUSY1', 'DisSUSY2', 'DisSUSY3', 'DisSUSY4', 'QCD1', 
         
         #make model
         print("Found it")
-        stored_model = tf.keras.models.load_model("retrain-testingInnerOuterEtaPhi/modelTEST-01")#("result_minxi/CKF_final/model")
+        stored_model = tf.keras.models.load_model("retrain-ALL-MKFIT125-pixelLessOnlyAndSoftQCD_wNOPU/modelTEST-01")#("result_minxi/CKF_final/model")
         
         #predict
-        prediction=stored_model.predict([df_tot[columns_of_regular_inputs2].to_numpy(), df_tot["trk_originalAlgo"].to_numpy()])
+        prediction=stored_model.predict([df_tot[columns_of_regular_inputs].to_numpy(), df_tot["trk_originalAlgo"].to_numpy()])
+        #prediction=stored_model.predict([df_tot[columns_of_regular_inputs2].to_numpy(), df_tot["trk_originalAlgo"].to_numpy()])
         
         #add column under the name column
         print (df_tot.shape, prediction.shape)
