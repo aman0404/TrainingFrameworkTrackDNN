@@ -5,9 +5,11 @@
 # with command line options: step3 --conditions auto:phase1_2021_realistic -s RAW2DIGI,RECO:reconstruction_trackingOnly,VALIDATION:@trackingOnlyValidation,DQM:@trackingOnlyDQM --datatier DQMIO -n -1 --geometry DB:Extended --era Run3 --eventcontent DQM --no_exec --filein file:/data2/mmasciov/DPNoteMkFit/CMSSW_12_4_0_pre4/src/RelValTTbar_14TeV_CMSSW_12_4_0_pre3-PU_123X_mcRun3_2021_realistic_v14-v1_GEN-SIM-DIGI-RAW_0a130b00-f603-48b4-9c14-3e563b44ca0c.root --fileout step3_mkFit_TTbarPU.root
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.Eras.Era_Run3_cff import Run3
+from Configuration.Eras.Era_Phase2C11I13T26M9_cff import Phase2C11I13T26M9
+#from Configuration.Eras.Era_Phase2_cff import Phase2
 
-process = cms.Process('RECO',Run3)
+process = cms.Process('MYRECO', Phase2C11I13T26M9)
+#process = cms.Process('MYRECO',Phase2)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -15,7 +17,10 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D88Reco_cff')
+#process.load('Configuration.Geometry.GeometryExtended2026D88_cff')
+#process.load('Configuration.Geometry.GeometryExtended2026D95Reco_cff')
+#process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 process.load('Configuration.StandardSequences.Reconstruction_cff')
@@ -24,6 +29,18 @@ process.load('DQMServices.Core.DQMStoreNonLegacy_cff')
 process.load('DQMOffline.Configuration.DQMOfflineMC_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
+
+process.load('RecoLocalMuon.GEMRecHit.gemRecHits_cfi')
+#process.load('RecoLocalMuon.GEMRecHit.me0RecHits_cfi')
+process.load('RecoLocalMuon.GEMRecHit.me0LocalReco_cff')
+
+#from RecoLocalMuon.GEMRecHit.gemRecHitsDef_cfi import *
+#gemRecHits = gemRecHitsDef.clone(
+    #applyMasking = False,
+    #maskFile = cms.FileInPath("RecoLocalMuon/GEMRecHit/data/maskedStrips.txt"),
+    #deadFile = cms.FileInPath("RecoLocalMuon/GEMRecHit/data/deadStrips.txt")
+#    )
+
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(100),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
@@ -31,8 +48,38 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/mc/Run3Winter22DR/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/PUForTRK_DIGI_122X_mcRun3_2021_realistic_v9-v2/2820000/009da204-2635-4d9f-8a34-584e03899242.root'),
-    secondaryFileNames = cms.untracked.vstring()
+    fileNames = cms.untracked.vstring('/store/mc/Phase2Fall22DRMiniAOD/TTTo2L2Nu_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2-v1/30000/0064cbd6-2198-42e7-88f3-149736024681.root'),
+    secondaryFileNames = cms.untracked.vstring(),
+    dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
+    inputCommands=cms.untracked.vstring(
+            'keep *',
+            'drop *_*_*_RECO',
+            'drop *_*_*_RECO',
+    )
+
+)
+
+#from RecoMuon.MuonIdentification.earlyMuons_cfi import earlyMuons
+#process.gemRecHits = cms.EDProducer("GEMRecHitProducer",
+#    recAlgoConfig = cms.PSet(),
+#    recAlgo = cms.string('GEMRecHitStandardAlgo'),
+#    gemDigiLabel = cms.InputTag("simMuonGEMDigis"),
+#    # maskSource = cms.string('File'),
+#    # maskvecfile = cms.FileInPath('RecoLocalMuon/GEMRecHit/data/GEMMaskVec.dat'),
+#    # deadSource = cms.string('File'),
+#    # deadvecfile = cms.FileInPath('RecoLocalMuon/GEMRecHit/data/GEMDeadVec.dat')
+#)
+
+process.gemRecHits.gemDigiLabel = cms.InputTag("simMuonGEMDigis","","GEMDIGI")
+
+process.gemRecHits = cms.EDProducer("GEMRecHitProducer",
+    recAlgoConfig = cms.PSet(),
+    recAlgo = cms.string('GEMRecHitStandardAlgo'),
+    gemDigiLabel = cms.InputTag("simMuonGEMDigis"),
+    # maskSource = cms.string('File'),
+    # maskvecfile = cms.FileInPath('RecoLocalMuon/GEMRecHit/data/GEMMaskVec.dat'),
+    # deadSource = cms.string('File'),
+    # deadvecfile = cms.FileInPath('RecoLocalMuon/GEMRecHit/data/GEMDeadVec.dat')
 )
 
 process.options = cms.untracked.PSet(
@@ -92,12 +139,14 @@ process.mix.digitizers = cms.PSet()
 for a in process.aliases: delattr(process, a)
 process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '125X_mcRun3_2022_realistic_v2', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T21', '')
+#process.GlobalTag = GlobalTag(process.GlobalTag, '125X_mcRun4_realistic_v2', '')
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2022_realistic', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.reconstruction_step = cms.Path(process.reconstruction_trackingOnly)
+#process.reconstruction_step = cms.Path(process.reconstruction_trackingOnly+process.gemRecHits)
 process.prevalidation_step = cms.Path(process.globalPrevalidationTrackingOnly)
 process.validation_step = cms.EndPath(process.globalValidationTrackingOnly)
 process.dqmoffline_step = cms.EndPath(process.DQMOfflineTracking)
@@ -116,6 +165,9 @@ process = customiseTrackingNtuple(process)
 # Automatic addition of the customisation function from SimGeneral.MixingModule.fullMixCustomize_cff
 from SimGeneral.MixingModule.fullMixCustomize_cff import setCrossingFrameOn 
 
+#from RecoTracker.IterativeTracking.DetachedTripletStep_cff import detachedTripletStepClusters
+
+
 #call to customisation function setCrossingFrameOn imported from SimGeneral.MixingModule.fullMixCustomize_cff
 process = setCrossingFrameOn(process)
 
@@ -125,17 +177,17 @@ process = setCrossingFrameOn(process)
 process.options.numberOfThreads = 4
 process.options.numberOfStreams = 0
 
-process.initialStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.lowPtQuadStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.highPtTripletStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.lowPtTripletStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.detachedQuadStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.detachedTripletStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.pixelPairStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.mixedTripletStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.pixelLessStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.tobTecStep.qualityCuts = [-100.0, -100.0, -100.0]
-process.jetCoreRegionalStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.initialStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.lowPtQuadStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.highPtTripletStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.lowPtTripletStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.detachedQuadStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.detachedTripletStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.pixelPairStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.mixedTripletStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.pixelLessStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.tobTecStep.qualityCuts = [-100.0, -100.0, -100.0]
+#process.jetCoreRegionalStep.qualityCuts = [-100.0, -100.0, -100.0]
 # Customisation from command line
 
 #Have logErrorHarvester wait for the same EDProducers to finish as those providing data for the OutputModule
